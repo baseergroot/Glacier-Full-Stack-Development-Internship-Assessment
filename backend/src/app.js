@@ -26,7 +26,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 60 * 60 * 1000 } // 1 hour
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } 
 }));
 
 // Configure More Middleware
@@ -58,6 +58,7 @@ app.get('/secret', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
 });
 
 app.get("/api/logout", (req, res, next) => {
+    console.log('Logout route hit');
   req.logout(err => {
     if (err) { return next(err); }
     res.redirect("/login");
@@ -65,12 +66,14 @@ app.get("/api/logout", (req, res, next) => {
 });
 
 app.post('/api/signup', async (req, res) => {
-    console.log('Signup route hit');
+    // console.log('Signup route hit');
   try {
         const { name, username, password } = req.body;
 
         // Validate required fields
         if (!name || !username || !password) {
+
+            // console.log('Missing required fields');
             return res.status(400).json({
                 success: false,
                 message: 'Name, username, and password are required'
@@ -80,6 +83,7 @@ app.post('/api/signup', async (req, res) => {
         // Check if username already exists
         const existingUser = await User.findOne({ username });
         if (existingUser) {
+            // console.log('Username already exists:', username);
             return res.status(400).json({
                 success: false,
                 message: 'Username already exists'
@@ -97,7 +101,9 @@ app.post('/api/signup', async (req, res) => {
 
         // Automatically log in the user after registration
         req.login(registeredUser, (err) => {
+            // console.log('Auto login after registration');
             if (err) {
+                console.error('Login error after registration:', err);
                 return res.status(500).json({
                     success: false,
                     message: 'Registration successful but login failed'
@@ -116,7 +122,7 @@ app.post('/api/signup', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Signup error:', error);
+        // console.error('Signup error:', error);
         res.status(500).json({
             success: false,
             message: 'Registration failed',
@@ -162,8 +168,10 @@ app.post('/api/login', (req, res, next) => {
 });
 
 app.get('/api/user/isauthenticated', (req, res) => {
-    // console.log('is authenticated route hit')
+    console.log('is authenticated route hit')
+    // console.log('User is authenticated:', req?.user);
     if (req.isAuthenticated()) {
+        console.log('User is authenticated:', req.user);
         res.status(200).json({
             success: true,
             user: {
@@ -186,7 +194,7 @@ app.post('/api/create/team', async (req,res) => {
     const { title } = req.body;
     console.log('Create team route hit');
     console.log('Team Name:', title);
-    if (!teamName) {
+    if (!title) {
         return res.status(400).json({
             success: false,
             message: 'Team name is required'
@@ -202,6 +210,7 @@ app.post('/api/create/team', async (req,res) => {
 })
 
 app.patch('/api/team/memebers/add', async (req,res) => {
+    console.log('Add team member route hit');
     const isAdmin = await Team.findOne({ _id: req.body.teamId, admin: req.user._id });
     if (!isAdmin) {
         return res.status(403).json({
@@ -210,7 +219,6 @@ app.patch('/api/team/memebers/add', async (req,res) => {
         });
     }
     const { teamId, userId } = req.body;
-    console.log('Add team member route hit');
     console.log('Team ID:', teamId);
     console.log('User ID:', userId);
     if (!teamId || !userId) {
@@ -253,6 +261,14 @@ app.post('api/team/add/task', async (req,res) => {
     }); 
 })
 
+app.get('/api/admin/teams', async (req,res) => {
+    console.log('Get teams route hit');
+    const teams = await Team.find({ members: req.user._id }).populate('admin', 'name username').populate('members', 'name username');
+    res.status(200).json({
+        success: true,
+        teams
+    });
+})
 // assign port 
 const port = 3000;
 app.listen(port, () => console.log(`This app is listening on port http://localhost:${port}`));

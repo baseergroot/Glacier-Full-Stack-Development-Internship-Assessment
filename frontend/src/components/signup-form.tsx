@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff, Users, AlertCircle } from "lucide-react"
+import axios from "axios"
 // import Link from "next/link"
 
 interface SignupFormData {
@@ -33,6 +34,7 @@ export function SignupForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const apiUrl = import.meta.env.VITE_API_KEY;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -69,19 +71,15 @@ export function SignupForm() {
     setSuccess("")
 
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await axios.post(`${apiUrl}/signup`, 
+        {
           name: formData.name.trim(),
           username: formData.username.trim(),
           password: formData.password,
-        }),
-      })
+        },
+        { withCredentials: true })
 
-      const data = await response.json()
+      const data = await response.data
 
       if (data.success) {
         setSuccess("Account created successfully! You are now logged in.")

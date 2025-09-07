@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, CheckSquare } from "lucide-react"
+import axios from "axios"
 
 interface CreateTaskFormProps {
   teams?: Array<{ _id: string; title: string; members: string[] }>
@@ -26,6 +27,7 @@ export default function CreateTaskForm({ teams = [], onTaskCreated, onCancel }: 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const apiUrl = import.meta.env.VITE_API_KEY
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,16 +36,10 @@ export default function CreateTaskForm({ teams = [], onTaskCreated, onCancel }: 
     setSuccess("")
 
     try {
-      const response = await fetch("http://localhost:3000/api/team/add/task", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ title, description, assignedTo, teamId }),
-      })
+      const response = await axios.post(`${apiUrl}/team/add/task`, 
+        { title, description, assignedTo, teamId }, { withCredentials: true })
 
-      const data = await response.json()
+      const data = await response.data
 
       if (data.success) {
         setSuccess("Task created successfully!")

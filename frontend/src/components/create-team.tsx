@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Users } from "lucide-react"
+import axios from "axios"
 
 interface CreateTeamFormProps {
   onTeamCreated?: (team: any) => void
@@ -20,6 +21,7 @@ export default function CreateTeamForm({ onTeamCreated, onCancel }: CreateTeamFo
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const apiUrl = import.meta.env.VITE_API_KEY
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,16 +30,11 @@ export default function CreateTeamForm({ onTeamCreated, onCancel }: CreateTeamFo
     setSuccess("")
 
     try {
-      const response = await fetch("http://localhost:3000/api/create/team", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ title }),
-      })
+      const response = await axios.post(`${apiUrl}/create/team`,
+         {title} ,
+        { withCredentials: true })
 
-      const data = await response.json()
+      const data = response.data
 
       if (data.success) {
         setSuccess("Team created successfully!")

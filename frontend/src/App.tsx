@@ -5,6 +5,7 @@ import { SignupForm } from "./components/signup-form"
 import { LoginForm } from "./components/login-form"
 import { Route, Routes } from "react-router-dom"
 import Dashboard from "./components/dashboard"
+import axios from "axios"
 
 interface User {
   id: string
@@ -13,6 +14,7 @@ interface User {
 }
 
 function App() {
+  const apiUrl = import.meta.env.VITE_API_KEY;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
@@ -20,11 +22,11 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/user/isauthenticated", {
-          credentials: "include",
+        const response = await axios.get(`${apiUrl}/user/isauthenticated`, {
+          withCredentials: true,
         })
-        const data = await response.json()
-
+        const data = response.data
+        // console.log("Auth check response:", data)
         if (data.success && data.user) {
           setIsAuthenticated(true)
           setUser(data.user)

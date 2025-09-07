@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, UserPlus } from "lucide-react"
+import axios from "axios"
 
 interface AddMemberFormProps {
   teams?: Array<{ _id: string; title: string; members: string[] }>
@@ -23,6 +24,7 @@ export default function AddMemberForm({ teams = [], onMemberAdded, onCancel }: A
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const apiUrl = import.meta.env.VITE_API_URL
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,16 +33,13 @@ export default function AddMemberForm({ teams = [], onMemberAdded, onCancel }: A
     setSuccess("")
 
     try {
-      const response = await fetch("http://localhost:3000/api/team/members/add", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ teamId, userId }),
-      })
+      const response = await axios.patch(`${apiUrl}/team/members/add`, 
+        { teamId, userId }, 
+        { withCredentials: true }
+      )
 
-      const data = await response.json()
+      const data = await response.data
+      console.log(data)
 
       if (data.success) {
         setSuccess("Member added successfully!")
