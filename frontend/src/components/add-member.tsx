@@ -1,132 +1,111 @@
-"use client"
+import React, { useState } from "react";
+import axios from "axios";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useDebounce } from "@/hooks/useDebounce";
 
-import type React from "react"
+const apiUrl = import.meta.env.VITE_API_KEY;
+export default function AddMemberForm({ teamId }) {
+  const [open, setOpen] = useState(false); // Controls form visibility
+  const [username, setUsername] = useState("");
+  const [debouncedUsername] = useDebounce(username, 500);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, UserPlus } from "lucide-react"
-import axios from "axios"
-
-interface AddMemberFormProps {
-  teams?: Array<{ _id: string; title: string; members: string[] }>
-  onMemberAdded?: (team: any) => void
-  onCancel?: () => void
-}
-
-export default function AddMemberForm({ teams = [], onMemberAdded, onCancel }: AddMemberFormProps) {
-  const [userId, setUserId] = useState("")
-  const [teamId, setTeamId] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
-  const apiUrl = import.meta.env.VITE_API_URL
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setSuccess("")
-
-    try {
-      const response = await axios.patch(`${apiUrl}/team/members/add`, 
-        { teamId, userId }, 
-        { withCredentials: true }
-      )
-
-      const data = await response.data
-      console.log(data)
-
-      if (data.success) {
-        setSuccess("Member added successfully!")
-        setUserId("")
-        setTeamId("")
-        onMemberAdded?.(data.team)
-      } else {
-        setError(data.message || "Failed to add member")
-      }
-    } catch (err) {
-      setError("Network error. Please try again.")
-    } finally {
-      setIsLoading(false)
+  // Fetch users when debouncedUsername changes
+  React.useEffect(() => {
+    if (!debouncedUsername) {
+      setResults([]);
+      return;
     }
-  }
+
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${import.meta.env.VITE_API_KEY}/user`, {
+  params: { username: debouncedUsername },
+});
+        setResults(res.data.users || []);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [debouncedUsername]);
+
+  const handleAddMember = async (userId) => {
+    try {
+      await axios.post(
+        `${apiUrl}/teams/${teamId}/add-member`,
+        { userId },
+        { withCredentials: true }
+      );
+      alert("Member added successfully!");
+      setOpen(false);
+      setUsername("");
+      setResults([]);
+    } catch (err) {
+      console.error("Error adding member:", err);
+      alert("Failed to add member.");
+    }
+  };
+
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserPlus className="h-5 w-5" />
-          Add Team Member
-        </CardTitle>
-        <CardDescription>Add a new member to your team</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="team">Select Team</Label>
-            <Select value={teamId} onValueChange={setTeamId} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a team" />
-              </SelectTrigger>
-              <SelectContent>
-                {teams.map((team) => (
-                  <SelectItem key={team._id} value={team._id}>
-                    {team.title} ({team.members.length} members)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="userId">User ID</Label>
+    <div className="mt-6">
+      {!open ? (
+        <Button onClick={() => setOpen(true)}>+ Add Member</Button>
+      ) : (
+        <Card className="p-4 shadow-lg max-w-md">
+          <CardContent className="space-y-3">
             <Input
-              id="userId"
-              type="text"
-              placeholder="Enter user ID to add"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              required
-              disabled={isLoading}
+              placeholder="Search by username..."
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
-          </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+            {loading && <p className="text-sm text-gray-500">Searching...</p>}
 
-          {success && (
-            <Alert>
-              <AlertDescription>{success}</AlertDescription>
-            </Alert>
-          )}
-
-          <div className="flex gap-2">
-            <Button type="submit" disabled={isLoading || !userId.trim() || !teamId} className="flex-1">
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Adding...
-                </>
+            <div className="space-y-2">
+              {results.length > 0 ? (
+                results.map((user) => (
+                  <div
+                    key={user._id}
+                    className="flex justify-between items-center border p-2 rounded-md"
+                  >
+                    <span>@{user.username}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAddMember(user._id)}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                ))
               ) : (
-                "Add Member"
+                debouncedUsername && !loading && (
+                  <p className="text-sm text-gray-400">No users found</p>
+                )
               )}
-            </Button>
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => {
+                setOpen(false);
+                setUsername("");
+                setResults([]);
+              }}>
                 Cancel
               </Button>
-            )}
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  )
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
 }

@@ -3,9 +3,9 @@ import { useEffect, useState } from "react"
 import HomePage from "./components/home"
 import { SignupForm } from "./components/signup-form"
 import { LoginForm } from "./components/login-form"
-import { Route, Routes } from "react-router-dom"
-import Dashboard from "./components/dashboard"
+import { Navigate, Route, Routes } from "react-router-dom"
 import axios from "axios"
+import Teamdetail from "./components/team-detail"
 
 interface User {
   id: string
@@ -28,6 +28,7 @@ function App() {
         const data = response.data
         // console.log("Auth check response:", data)
         if (data.success && data.user) {
+          console.log("Authenticated user:", data.user)
           setIsAuthenticated(true)
           setUser(data.user)
         } else {
@@ -60,10 +61,10 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Dashboard user={user} /> : <HomePage />} />
-        <Route path="/signup" element={isAuthenticated ? <Dashboard user={user} /> : <SignupForm />} />
-        <Route path="/login" element={isAuthenticated ? <Dashboard user={user} /> : <LoginForm />} />
-        <Route path="/dashboard" element={isAuthenticated ? <Dashboard user={user} /> : <HomePage />} />
+        <Route path="/" element={ <HomePage isAuthenticated={isAuthenticated}/>} />
+        <Route path="/signup" element={!isAuthenticated ? <SignupForm /> :  <Navigate to="/" />} />
+        <Route path="/login" element={!isAuthenticated ? <LoginForm />  : <Navigate to="/" /> } />
+        <Route path="/team/:id" element={isAuthenticated ? <Teamdetail /> : <Navigate to="/login" />} />
       </Routes>
     </>
   )

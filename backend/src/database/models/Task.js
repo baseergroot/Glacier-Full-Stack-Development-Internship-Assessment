@@ -7,6 +7,7 @@ const taskSchema = new mongoose.Schema(
         status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
         dueDate: { type: Date },
         assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        team: { type: mongoose.Schema.Types.ObjectId, ref: "Team", required: true }
     },
     { timestamps: true }
 )
