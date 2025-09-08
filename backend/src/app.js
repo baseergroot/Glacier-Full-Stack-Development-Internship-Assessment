@@ -426,4 +426,4 @@ app.get("/api/my-tasks", async (req, res) => {
 
 // assign port  
 const port = process.env.PORT || 3000;
-app.listen(3000, () => console.log(`This app is listening on port http://localhost:${port}`));
+app.listen(port, () => console.log(`This app is listening on port http://localhost:${port}`));
