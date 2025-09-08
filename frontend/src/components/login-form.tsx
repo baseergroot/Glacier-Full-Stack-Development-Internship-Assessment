@@ -26,7 +26,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000/api"
+  const apiUrl = import.meta.env.VITE_API_KEY || "http://localhost:4000/api"
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
