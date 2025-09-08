@@ -26,6 +26,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000/api"
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -53,7 +54,7 @@ export function LoginForm() {
     setSuccess("")
 
     try {
-      const response = await axios.post("http://localhost:3000/api/login", {
+      const response = await axios.post(`${apiUrl}/login`, {
           username: formData.username.trim(),
           password: formData.password,
       }, 
