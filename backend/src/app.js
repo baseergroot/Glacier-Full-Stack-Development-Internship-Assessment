@@ -28,7 +28,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true } // 1 week
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, 
+    httpOnly: true, 
+    sameSite: 'none', 
+    secure: true 
+  } // 1 week
 }));
 
 // Configure More Middleware
@@ -304,7 +308,7 @@ app.get('/api/team/:id', async (req,res) => {
             message: 'Team not found or you are not a member'
         });
     }
-    const tasks = await Task.find({ assignedTo: { $in: team.members } });
+    const tasks = await Task.find({ assignedTo: { $in: team.members } }).populate('assignedTo', 'name username')
     res.status(200).json({
         success: true,
         team,
@@ -422,7 +426,21 @@ app.get("/api/my-tasks", async (req, res) => {
   }
 });
 
+app.get('/api/teams', async (req,res) => {
+    console.log('Get all teams route hit');
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            message: 'Not authenticated'
+        });
+    }
 
+    const teams = await Team.find({members: req.user._id}).populate('admin', 'name username').populate('members', 'name username');
+    res.status(200).json({
+        success: true,
+        teams
+    });
+})
 
 // assign port  
 const port = process.env.PORT || 4000;

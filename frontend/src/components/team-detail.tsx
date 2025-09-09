@@ -65,9 +65,9 @@ export default function TeamDetail() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-semibold">Members</CardTitle>
-          <Button size="sm" onClick={() => setShowMemberModal(true)}>
+          {/* <Button size="sm" onClick={() => setShowMemberModal(true)}>
             <Plus className="w-4 h-4 mr-1" /> Add
-          </Button>
+          </Button> */}
         </CardHeader>
         <CardContent>
           <ul className="grid grid-cols-2 gap-2">
@@ -109,7 +109,7 @@ export default function TeamDetail() {
                 >
                   <span>{t.title}</span>
                   <span className="text-sm text-gray-500">
-                    Assigned To: {t.assignedTo?.join(", ") || "None"}
+                    Assigned To: {t?.assignedTo?.username || "Unassigned"}
                   </span>
                 </li>
               ))}

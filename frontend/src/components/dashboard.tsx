@@ -1,16 +1,14 @@
-// import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, CheckCircle, Calendar, BarChart3, Menu, X, CheckSquare, TrendingUp } from "lucide-react"
-import { useState } from 'react';
-import TeamsCard from "./get-team";
-import MyTasks from "./myTask";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { useState } from "react";
+import { Users, CheckCircle, Calendar, BarChart3, Menu, X, CheckSquare, TrendingUp } from "lucide-react"
+import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import MyTasks from "./myTask";
+import TeamsCard from "./get-team";
 
 
-export default function HomePage({isAuthenticated}: {isAuthenticated: boolean}) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function Dashboard({isAuthenticated}: {isAuthenticated: boolean}) {
+        const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const HandleLogout = async () => {
     try {
@@ -174,31 +172,13 @@ export default function HomePage({isAuthenticated}: {isAuthenticated: boolean}) 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Heading */}
         <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-          Manage Tasks & Teams{" "}
-          <span className="block text-blue-600">Effortlessly</span>
+          
+          <span className="block text-blue-600">Dashboard</span>
         </h1>
 
-        {/* Subheading */}
-        <p className="max-w-2xl mx-auto text-lg text-gray-600 mb-10">
-          A simple, powerful task manager to organize your work, collaborate
-          with teams, and stay productive — all in one place.
-        </p>
-
-        {/* CTA buttons */}
-        <div className="flex justify-center gap-4">
-          <a
-            href="/dashboard"
-            className="px-6 py-3 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
-          >
-            Go to Dashboard
-          </a>
-          <a
-            href="#features"
-            className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
-          >
-            Learn More
-          </a>
-        </div>
+        
+        <MyTasks /> 
+        <TeamsCard />
       </div>
     </section>
     </div>
