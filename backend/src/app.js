@@ -45,17 +45,16 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.status(401).json({ success: false, message: "Unauthorized" });
+}
+
 app.get('/', (req, res) => {
   res.send('Welcome to the Glacier App');
 })
-
-app.get('/api/dashboard', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
-  res.send(`Hello ${req.user.username}. Your session ID is ${req.sessionID}
-   and your session expires in ${req.session.cookie.maxAge}
-   milliseconds.<br><br>
-   <a href="/logout">Log Out</a><br><br>
-   <a href="/secret">Members Only</a>`);
-});
 
 app.get('/secret', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
   res.send('This is the secret page. Only logged in users can see this.');
@@ -284,7 +283,7 @@ app.post("/api/team/add/task", async (req, res) => {
 });
 
 
-app.get('/api/admin/teams', async (req,res) => {
+app.get('/api/admin/teams', isAuthenticated, async (req,res) => {
     console.log('Admin get teams route hit');
     console.log('Get teams route hit');
     const teams = await Team.find({ members: req.user._id }).populate('admin', 'name username').populate('members', 'name username');
