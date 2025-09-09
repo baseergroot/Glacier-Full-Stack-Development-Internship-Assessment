@@ -84,7 +84,7 @@ export function SignupForm() {
       if (data.success) {
         setSuccess("Account created successfully! You are now logged in.")
         // Redirect to dashboard or home page
-        window.location.href = "/dashboard"
+        window.location.href = "/"
       } else {
         setError(data.message || "Registration failed. Please try again.")
       }
