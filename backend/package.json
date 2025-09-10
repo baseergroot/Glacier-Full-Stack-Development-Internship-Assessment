@@ -14,10 +14,11 @@
   "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "dependencies": {
-    "D": "^1.0.0",
     "body-parser": "^2.2.0",
     "connect-ensure-login": "^0.1.1",
+    "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
+    "D": "^1.0.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
