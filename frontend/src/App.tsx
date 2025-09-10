@@ -7,8 +7,8 @@ import { Navigate, Route, Routes } from "react-router-dom"
 import axios from "axios"
 import Teamdetail from "./components/team-detail"
 import Teams from "./components/teams"
-import MyTasks from "./components/tasks-route"
 import Dashboard from "./components/dashboard"
+import TasksRoute from "./components/tasks-route"
 
 interface User {
   id: string
@@ -69,7 +69,7 @@ function App() {
         <Route path="/login" element={!isAuthenticated ? <LoginForm /> : <Navigate to="/" />} />
         <Route path="/team/:id" element={isAuthenticated ? <Teamdetail /> : <Navigate to="/login" />} />
         <Route path="/teams" element={isAuthenticated ? <Teams currentUser={user} /> : <Navigate to="/login" />} />
-        <Route path="/tasks" element={isAuthenticated ? <MyTasks /> : <Navigate to="/login" />} />
+        <Route path="/tasks" element={isAuthenticated ? <TasksRoute /> : <Navigate to="/login" />} />
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard isAuthenticated={isAuthenticated} /> : <Navigate to="/login" />} />
       </Routes>
     </>

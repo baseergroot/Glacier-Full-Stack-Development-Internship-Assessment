@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function MyTasks() {
+export default function TasksRoute() {
   const apiUrl = import.meta.env.VITE_API_KEY;
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
