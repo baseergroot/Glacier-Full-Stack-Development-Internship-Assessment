@@ -439,22 +439,6 @@ app.get("/api/my-tasks", async (req, res) => {
   }
 });
 
-app.get('/api/teams', async (req,res) => {
-    console.log('Get all teams route hit');
-    if (!req.user) {
-        return res.status(401).json({
-            success: false,
-            message: 'Not authenticated'
-        });
-    }
-
-    const teams = await Team.find({members: req.user._id}).populate('admin', 'name username').populate('members', 'name username');
-    res.status(200).json({
-        success: true,
-        teams
-    });
-})
-
 app.get("/api/teams", async (req, res) => {
   try {
     if (!req.user) {
