@@ -20,9 +20,13 @@ await connectDB()
 // console.log(process.env.FRONTEND_URL, process.env.NODE_ENV)
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL, // frontend URL
-  credentials: true // allow session cookie from browser to pass through
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['set-cookie']
 }));
+
 app.use(express.json())
 // Configure Sessions Middleware
 app.use(session({
@@ -32,8 +36,15 @@ app.use(session({
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, 
     httpOnly: true, 
     sameSite: 'none', 
-    secure: process.env.NODE_ENV !== 'development'
-  } // 1 week
+    secure: process.env.NODE_ENV !== 'development',
+    domain: process.env.FRONTEND_URL
+  }, // 1 week
+  proxy: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    collectionName: 'sessions', // optional - defaults to 'sessions'
+    ttl: 7 * 24 * 60 * 60 // Session TTL (in seconds)
+  }),
 }));
 
 // Configure More Middleware
