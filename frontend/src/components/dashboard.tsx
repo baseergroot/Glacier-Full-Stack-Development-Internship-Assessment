@@ -175,8 +175,8 @@ export default function Dashboard({isAuthenticated}: {isAuthenticated: boolean})
         </h1>
 
         
-        <MyTasks /> 
-        <TeamsCard />
+        {/* <MyTasks /> 
+        <TeamsCard /> */}
       </div>
     </section>
     </div>

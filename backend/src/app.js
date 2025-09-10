@@ -16,7 +16,8 @@ const app = express();
 
 await connectDB()
 
-console.log(process.env.FRONTEND_URL)
+// console.log("environment: ", process.env.NODE_ENV !== 'development')
+// console.log(process.env.FRONTEND_URL, process.env.NODE_ENV)
 
 app.use(cors({
   origin: process.env.FRONTEND_URL, // frontend URL
@@ -31,7 +32,7 @@ app.use(session({
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, 
     httpOnly: true, 
     sameSite: 'none', 
-    secure: true 
+    secure: process.env.NODE_ENV !== 'development'
   } // 1 week
 }));
 
