@@ -34,18 +34,18 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, 
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true, 
     sameSite: 'none', 
     secure: process.env.NODE_ENV !== 'development',
     domain: process.env.NODE_ENV !== 'development' ? '.vercel.app' : undefined
   }, // 1 week
   proxy: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
-    collectionName: 'sessions', // optional - defaults to 'sessions'
-    ttl: 7 * 24 * 60 * 60 // Session TTL (in seconds)
-  }),
+  // store: MongoStore.create({
+  //   mongoUrl: process.env.MONGODB_URI,
+  //   collectionName: 'sessions', // optional - defaults to 'sessions'
+  //   ttl: 7 * 24 * 60 * 60 // Session TTL (in seconds)
+  // }),
 }));
 
 // Configure More Middleware
