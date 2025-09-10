@@ -20,8 +20,6 @@ export default function Dashboard({isAuthenticated}: {isAuthenticated: boolean})
   }
 
   if (!isAuthenticated) {
-
-  
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -110,18 +108,18 @@ export default function Dashboard({isAuthenticated}: {isAuthenticated: boolean})
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Dashboard
-              </a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+              <Link to="/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors">
+               Dashboard
+              </Link>
+              <Link to="/tasks" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Tasks
-              </a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+              </Link>
+              <Link to="/teams" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Teams
-              </a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+              </Link>
+              {/* <Link to="" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Reports
-              </a>
+              </Link> */}
               <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
                 Get Started
               </button>
@@ -142,15 +140,15 @@ export default function Dashboard({isAuthenticated}: {isAuthenticated: boolean})
           {isMenuOpen && (
             <div className="md:hidden py-4 border-t">
               <div className="flex flex-col space-y-4">
-                <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
+                <Link to="#" className="text-gray-700 hover:text-blue-600 transition-colors">
                   Dashboard
-                </a>
-                <a href="/tasks" className="text-gray-700 hover:text-blue-600 transition-colors">
+                </Link>
+                <Link to="/tasks" className="text-gray-700 hover:text-blue-600 transition-colors">
                   Tasks
-                </a>
-                <a href="/teams" className="text-gray-700 hover:text-blue-600 transition-colors">
+                </Link>
+                <Link to="/teams" className="text-gray-700 hover:text-blue-600 transition-colors">
                   Teams
-                </a>
+                </Link>
                 
                 {
                   isAuthenticated ? <button 

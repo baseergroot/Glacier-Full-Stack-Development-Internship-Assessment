@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, CheckCircle, Calendar, BarChart3, Menu, X, CheckSquare, TrendingUp } from "lucide-react"
 import { useState } from 'react';
-import TeamsCard from "./get-team";
-import MyTasks from "./myTask";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
