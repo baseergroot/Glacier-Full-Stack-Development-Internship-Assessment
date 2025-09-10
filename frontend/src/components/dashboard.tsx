@@ -177,9 +177,9 @@ export default function Dashboard({ isAuthenticated }: { isAuthenticated: boolea
             <span className="block text-blue-600">Dashboard</span>
           </h1>
 
-
-          {/* <MyTasks /> */}
+          <MyTasks />
           <TeamsCard />
+
         </div>
       </section>
     </div>
