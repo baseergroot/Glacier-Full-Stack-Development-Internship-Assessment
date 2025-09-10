@@ -38,7 +38,7 @@ app.use(session({
     httpOnly: true, 
     sameSite: 'none', 
     secure: process.env.NODE_ENV !== 'development',
-    domain: process.env.NODE_ENV !== 'development' ? '.vercel.app' : undefined
+    // domain: process.env.NODE_ENV !== 'development' ? '.vercel.app' : undefined
   }, // 1 week
   proxy: true,
   // store: MongoStore.create({
