@@ -178,8 +178,8 @@ export default function Dashboard({ isAuthenticated }: { isAuthenticated: boolea
           </h1>
 
 
-          <MyTasks />
-          {/* <TeamsCard /> */}
+          {/* <MyTasks /> */}
+          <TeamsCard />
         </div>
       </section>
     </div>
