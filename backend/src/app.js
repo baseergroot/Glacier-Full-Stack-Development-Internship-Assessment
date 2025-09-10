@@ -455,6 +455,29 @@ app.get('/api/teams', async (req,res) => {
     });
 })
 
+app.get("/api/teams", async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
+
+    const teams = await Team.find({ members: req.user._id })
+      .populate("admin", "name username")
+      .populate("members", "name username");
+
+    res.status(200).json({
+      success: true,
+      teams,
+    });
+  } catch (err) {
+    console.error("Error fetching teams:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // assign port  
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`This app is listening on port http://localhost:${port}`));

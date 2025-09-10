@@ -19,7 +19,7 @@ export default function TeamsCard() {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${apiUrl}/admin/teams`, {
+      const response = await axios.get(`${apiUrl}/teams`, {
         withCredentials: true,
       });
       const data = response.data;
