@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import Team from './database/models/Team.js';
 import Task from './database/models/Task.js';
+import MongoStore from 'connect-mongo';
 
 dotenv.config();
 
@@ -37,7 +38,7 @@ app.use(session({
     httpOnly: true, 
     sameSite: 'none', 
     secure: process.env.NODE_ENV !== 'development',
-    domain: process.env.FRONTEND_URL
+    domain: process.env.NODE_ENV !== 'development' ? '.vercel.app' : undefined
   }, // 1 week
   proxy: true,
   store: MongoStore.create({
