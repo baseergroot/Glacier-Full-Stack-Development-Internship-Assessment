@@ -1,25 +1,62 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Users, CheckCircle, Calendar, BarChart3, Menu, X, CheckSquare, TrendingUp } from "lucide-react"
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import MyTasks from "./myTask";
 import TeamsCard from "./get-team";
+import CreateTeamForm from "./create-team";
+import AddTaskModal from "./create-task";
+import DashboardCard from "./dashboard-card";
 
+const apiUrl = import.meta.env.VITE_API_KEY;
 
 export default function Dashboard({ isAuthenticated }: { isAuthenticated: boolean }) {
   console.log("Dashboard rendered with isAuthenticated:", isAuthenticated);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [teams, setTeams] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
   const HandleLogout = async () => {
     console.log("Logout function triggered");
     try {
-      const apiUrl = import.meta.env.VITE_API_KEY;
+
       await axios.get(`${apiUrl}/logout`, { withCredentials: true });
     } catch (error) {
       console.error('An error occurred during logout:', error);
     }
   }
+
+  useEffect(() => {
+    axios.get(`${apiUrl}/teams`, { withCredentials: true })
+      .then((teamRes) => {
+        console.log("Teams fetched successfully", teamRes.data);
+
+        if (teamRes.data.success) {
+          setTeams(teamRes.data.teams);
+          axios.get(`${apiUrl}/tasks`, { withCredentials: true })
+            .then( taskRes => {
+
+              if (taskRes.data.success) {
+                console.log("Tasks fetched successfully", taskRes.data);
+                setTasks(taskRes.data.tasks);
+              } else {
+                console.log("task error", taskRes.data);
+              }
+              
+            })
+            .catch((error) => {
+              console.error("Error fetching tasks:", error);
+            })
+        } else {
+          console.log("team error", teamRes.data);
+        }
+
+      })
+      .catch((error) => {
+        console.error("Error fetching teams:", error);
+      });
+  }, [])
 
   if (!isAuthenticated) {
     return (
@@ -169,19 +206,7 @@ export default function Dashboard({ isAuthenticated }: { isAuthenticated: boolea
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Heading */}
-          <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-
-            <span className="block text-blue-600">Dashboard</span>
-          </h1>
-
-          {/* <MyTasks /> */}
-          <TeamsCard />
-
-        </div>
-      </section>
+      <DashboardCard tasks={tasks} teams={teams} />
     </div>
   )
 }

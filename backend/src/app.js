@@ -422,7 +422,7 @@ app.post("/api/teams/:teamId/:username/assign-task", async (req, res) => {
 });
 
 // Get tasks assigned to the logged-in user
-app.get("/api/my-tasks", async (req, res) => {
+app.get("/api/tasks", async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -432,7 +432,10 @@ app.get("/api/my-tasks", async (req, res) => {
       .populate("team", "title") // show team name
       .sort({ createdAt: -1 });
 
-    res.json(tasks);
+    res.json({
+      success: true,
+      tasks
+    });
   } catch (err) {
     console.error("Error fetching my tasks:", err);
     res.status(500).json({ error: "Server error" });
