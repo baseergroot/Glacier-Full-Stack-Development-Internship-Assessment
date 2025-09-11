@@ -18,23 +18,23 @@ export default function TeamsCard() {
 
   const fetchTeams = async () => {
     try {
-      setLoading(true);
-      const response = await axios.get(`${apiUrl}/teams`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(`${apiUrl}/teams`, { withCredentials: true });
       const data = response.data;
-
       if (data.success) {
         setTeams(data.teams);
       } else {
         setError("Failed to fetch teams");
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        console.warn("401 on /teams — user still logged in, just no teams");
+        setTeams([]);
+        return;
+      }
       setError("Error fetching teams");
       console.error("Error:", err);
-    } finally {
-      setLoading(false);
     }
+
   };
 
   // when a new team is created, update list immediately

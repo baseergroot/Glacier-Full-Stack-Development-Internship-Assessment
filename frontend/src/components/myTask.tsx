@@ -13,12 +13,16 @@ export default function MyTasks() {
     const fetchTasks = async () => {
       try {
         const res = await axios.get(`${apiUrl}/my-tasks`, { withCredentials: true });
-        setTasks(res.data);
-      } catch (err) {
+        setTasks(res.data.tasks || res.data); // support both shapes
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          console.warn("401 on /my-tasks — user still logged in, just no tasks");
+          setTasks([]);
+          return;
+        }
         console.error("Error fetching tasks:", err);
-      } finally {
-        setLoading(false);
       }
+
     };
     fetchTasks();
   }, []);
