@@ -70,7 +70,7 @@ function App() {
         <Route path="/team/:id" element={isAuthenticated ? <Teamdetail /> : <Navigate to="/login" />} />
         <Route path="/teams" element={isAuthenticated ? <Teams currentUser={user} /> : <Navigate to="/login" />} />
         <Route path="/tasks" element={isAuthenticated ? <TasksRoute /> : <Navigate to="/login" />} />
-        <Route path="/dashboard" element={isAuthenticated ? <Dashboard isAuthenticated={isAuthenticated} /> : <Navigate to="/login" />} />
+        <Route path="/dashboard" element={isAuthenticated ? <Dashboard isAuthenticated={isAuthenticated} user={user} /> : <Navigate to="/login" />} />
       </Routes>
     </>
   )

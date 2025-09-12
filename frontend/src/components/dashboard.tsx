@@ -3,15 +3,11 @@ import { useEffect, useState } from "react";
 import { Users, CheckCircle, Calendar, BarChart3, Menu, X, CheckSquare, TrendingUp } from "lucide-react"
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import MyTasks from "./myTask";
-import TeamsCard from "./get-team";
-import CreateTeamForm from "./create-team";
-import AddTaskModal from "./create-task";
 import DashboardCard from "./dashboard-card";
 
 const apiUrl = import.meta.env.VITE_API_KEY;
 
-export default function Dashboard({ isAuthenticated }: { isAuthenticated: boolean }) {
+export default function Dashboard({ isAuthenticated, user }: { isAuthenticated: boolean, user: any }) {
   console.log("Dashboard rendered with isAuthenticated:", isAuthenticated);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [teams, setTeams] = useState([]);
@@ -206,7 +202,7 @@ export default function Dashboard({ isAuthenticated }: { isAuthenticated: boolea
       </nav>
 
       {/* Hero Section */}
-      <DashboardCard tasks={tasks} teams={teams} />
-    </div>
+      <DashboardCard tasks={tasks} teams={teams} user={user} />
+    </div> 
   )
 }

@@ -9,10 +9,13 @@ import axios from "axios";
 type Props = {
   tasks: { _id: string; title: string }[];
   teams: { _id: string; title: string }[];
+  user: any
 };
 
-export default function DashboardCard({ tasks, teams }: Props) {
+export default function DashboardCard({ tasks, teams, user }: Props) {
+  console.log("Tasks and teams dash card:", tasks, teams);
     const [tasksData, setTasksData] = useState(tasks);
+    const [teamsData, setTeamsData] = useState(teams);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
 
@@ -20,8 +23,22 @@ export default function DashboardCard({ tasks, teams }: Props) {
     const response = await axios.post(`${import.meta.env.VITE_API_KEY}/create/team`, {
       title: "New Team",
     }, { withCredentials: true });
-    
-  }
+    if (response.data.success) {
+      console.log("Team created successfully");
+      setShowTeamModal(false);
+      setTeamsData(response.data.teams);
+    } else {
+      console.error("Failed to create team", response.data);
+      setShowTeamModal(false);
+    }
+    }
+
+    // const handleTask = async () => {
+    //   const response = await axios.post(`${import.meta.env.VITE_API_KEY}/team/add/task`, {
+    //     title: "New Task",
+    //   }, { withCredentials: true });
+      
+    // }
 
   return (
     <section className="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 lg:py-32">
@@ -78,8 +95,10 @@ export default function DashboardCard({ tasks, teams }: Props) {
         )}
 
         {/* Task list & Teams list */}
+
+        <TeamsCard teams={teams} user={user} />
         <MyTasks tasks={tasks} />
-        <TeamsCard teams={teams} />
+        
       </div>
     </section>
   );

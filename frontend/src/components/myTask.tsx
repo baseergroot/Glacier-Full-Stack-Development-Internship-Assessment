@@ -9,7 +9,7 @@ const myTask = ({ tasks }) => {
       
       <h1>
         Tasks:  {
-        tasks > 1 ? tasks.map((task) => task.title) : "No tasks assigned to you."
+        tasks.length > 0 ? tasks.map((task) => task.title) : "No tasks assigned to you."
         }
       </h1>
     </div>

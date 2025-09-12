@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useDebounce } from "@/hooks/useDebounce";
 
 const apiUrl = import.meta.env.VITE_API_KEY;
-export default function AddMemberForm({ teamId }) {
+export default function AddMemberForm({ teamId }: any) {
   const [open, setOpen] = useState(false); // Controls form visibility
   const [username, setUsername] = useState("");
   const [debouncedUsername] = useDebounce(username, 500);
@@ -56,9 +56,11 @@ export default function AddMemberForm({ teamId }) {
 
 
   return (
-    <div className="mt-6">
+    <div className="">
       {!open ? (
-        <Button onClick={() => setOpen(true)}>+ Add Member</Button>
+        <Button onClick={() => setOpen(true)}>+ 
+        Add Member
+        </Button>
       ) : (
         <Card className="p-4 shadow-lg max-w-md">
           <CardContent className="space-y-3">

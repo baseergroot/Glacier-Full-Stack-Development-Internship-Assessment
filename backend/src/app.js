@@ -264,6 +264,7 @@ app.post("/api/team/add/task", async (req, res) => {
     // verify admin
     const isAdmin = await Team.findOne({ _id: teamId, admin: req.user._id });
     if (!isAdmin) {
+      console.log('Only team admin can add tasks');
       return res.status(403).json({
         success: false,
         message: "Only team admin can add tasks",
@@ -271,6 +272,7 @@ app.post("/api/team/add/task", async (req, res) => {
     }
 
     if (!title || !assignedTo) {
+      console.log('Title and Assigned To are required');
       return res.status(400).json({
         success: false,
         message: "Title and Assigned To are required",
@@ -287,6 +289,7 @@ app.post("/api/team/add/task", async (req, res) => {
 
     // push task into team
     await Team.findByIdAndUpdate(teamId, { $push: { tasks: task._id } });
+    console.log('Task created:');
 
     res.status(201).json({
       success: true,
