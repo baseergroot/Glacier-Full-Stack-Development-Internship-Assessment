@@ -6,7 +6,6 @@ const TeamCard = ({ teams, user }: any) => {
   console.log("TeamsCard :", teams, user);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
 
-  
   return (
     <div>
       <h1 className="text-2xl font-bold mb-5">
