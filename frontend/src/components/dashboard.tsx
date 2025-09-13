@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Users, CheckCircle, Calendar, BarChart3, Menu, X, CheckSquare, TrendingUp } from "lucide-react"
 import { Button } from "./ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardCard from "./dashboard-card";
 
 const apiUrl = import.meta.env.VITE_API_KEY;
@@ -12,12 +12,18 @@ export default function Dashboard({ isAuthenticated, user }: { isAuthenticated: 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [teams, setTeams] = useState([]);
   const [tasks, setTasks] = useState([]);
+      const navigate = useNavigate();
 
   const HandleLogout = async () => {
     console.log("Logout function triggered");
     try {
 
-      await axios.get(`${apiUrl}/logout`, { withCredentials: true });
+      const response: any = await axios.get(`${apiUrl}/logout`, { withCredentials: true });
+      console.log("Logout response:", response.data);
+      if (response.data.success) {
+        navigate("/")
+        window.location.reload();
+      } 
     } catch (error) {
       console.error('An error occurred during logout:', error);
     }

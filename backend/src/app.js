@@ -82,7 +82,7 @@ app.get("/api/logout", (req, res, next) => {
   console.log('Logout route hit');
   req.logout(err => {
     if (err) { return next(err); }
-    res.redirect("/login");
+    res.json({ success: true, message: 'Logout successful' });
   });
 });
 

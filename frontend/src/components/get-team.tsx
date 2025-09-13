@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Users, Plus, Crown, CheckCircle, Calendar, User } from "lucide-react";
 import AddMemberForm from "./add-member";
 import AddTaskModal from "./create-task";
 
 const TeamCard = ({ teams, user }: any) => {
+  console.log("user id", user.id);
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
+
+  // useEffect(() => {
+  //   console.log("user id", user);
+  //   console.log("teams", teams[0].admin);    
+
+  // }, [teams.length])
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-8">
@@ -51,7 +58,10 @@ const TeamCard = ({ teams, user }: any) => {
                       <span>{team.members.length} members</span>
                     </div>
                   </div>
-                  <AddMemberForm teamId={team._id} />
+                  {team.admin._id == user.id && (
+                    <AddMemberForm teamId={team._id} />
+                  )}
+                  
                 </div>
 
                 {/* Tasks Section */}
@@ -125,7 +135,8 @@ const TeamCard = ({ teams, user }: any) => {
                                 {member.username}
                               </span>
                             </div>
-                            <button
+                            {
+                              team.admin._id == user.id && <button
                               className="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 shadow-sm hover:shadow-md"
                               onClick={() => {
                                 setSelectedMember(member._id)
@@ -134,6 +145,8 @@ const TeamCard = ({ teams, user }: any) => {
                             >
                               Assign Task
                             </button>
+                            }
+                            
                           </div>
                         )}
                       </div>
