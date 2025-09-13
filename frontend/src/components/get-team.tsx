@@ -79,6 +79,8 @@ const TeamCard = ({ teams, user }: any) => {
                           />
                           <span className={`text-sm flex-1 ${task.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
                             {task.title}
+                            <span className="mx-5 ">-</span>
+                            <span className="text-blue-400 text-lg">{task.assignedTo.username}</span>
                           </span>
                         </div>
                       ))}
