@@ -24,35 +24,31 @@ export default function Dashboard({ isAuthenticated, user }: { isAuthenticated: 
   }
 
   useEffect(() => {
-    axios.get(`${apiUrl}/teams`, { withCredentials: true })
-      .then((teamRes) => {
-        console.log("Teams fetched successfully", teamRes.data);
+  const fetchData = async () => {
+    try {
+      const teamRes = await axios.get(`${apiUrl}/teams`, { withCredentials: true });
+      console.log("Teams fetched successfully", teamRes.data);
 
-        if (teamRes.data.success) {
-          setTeams(teamRes.data.teams);
-          axios.get(`${apiUrl}/tasks`, { withCredentials: true })
-            .then( taskRes => {
+      if (teamRes.data.success) {
+        setTeams(teamRes.data.teams);
 
-              if (taskRes.data.success) {
-                console.log("Tasks fetched successfully", taskRes.data);
-                setTasks(taskRes.data.tasks);
-              } else {
-                console.log("task error", taskRes.data);
-              }
-              
-            })
-            .catch((error) => {
-              console.error("Error fetching tasks:", error);
-            })
+        const taskRes = await axios.get(`${apiUrl}/tasks`, { withCredentials: true });
+        if (taskRes.data.success) {
+          console.log("Tasks fetched successfully", taskRes.data);
+          setTasks(taskRes.data.tasks);
         } else {
-          console.log("team error", teamRes.data);
+          console.log("task error", taskRes.data);
         }
+      } else {
+        console.log("team error", teamRes.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-      })
-      .catch((error) => {
-        console.error("Error fetching teams:", error);
-      });
-  }, [])
+  fetchData();
+}, []);
 
   if (!isAuthenticated) {
     return (

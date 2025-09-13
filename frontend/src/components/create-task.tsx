@@ -6,7 +6,7 @@ import { Textarea } from "./ui/textarea";
 import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_API_KEY;
-export default function AddTaskModal({ open, onClose, teamId, assignedTo }) {
+export default function AddTaskModal({ open, onClose, teamId, assignedTo }: any) {
   // console.log(apiUrl)
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -16,12 +16,12 @@ export default function AddTaskModal({ open, onClose, teamId, assignedTo }) {
     if (!title || !assignedTo) return;
     setLoading(true);
     try {
-      await axios.post(
-        `${apiUrl}/teams/${teamId}/${assignedTo}/assign-task`,
-        { title, description },
+      const response = await axios.post(
+        `${apiUrl}/task/create`,
+        { title, description, teamId, assignedTo },
         { withCredentials: true }
-      );
-      onClose();
+      )
+      console.log("Task assigned successfully", response.data);
     } catch (err) {
       console.error("Error assigning task:", err);
     } finally {

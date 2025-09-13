@@ -256,51 +256,18 @@ app.patch('/api/team/memebers/add', async (req,res) => {
     });
 })
 
-app.post("/api/team/add/task", async (req, res) => {
-    console.log('Add task route hit');
-  try {
-    const { teamId, title, description, assignedTo, dueDate } = req.body;
+app.post('/api/task/create', async (req, res) => {
+  console.log('New create task route hit');
+      const { teamId, title, assignedTo } = req.body;
+      console.log('create task body', { teamId, title, assignedTo } );
 
-    // verify admin
-    const isAdmin = await Team.findOne({ _id: teamId, admin: req.user._id });
-    if (!isAdmin) {
-      console.log('Only team admin can add tasks');
-      return res.status(403).json({
-        success: false,
-        message: "Only team admin can add tasks",
+      const task = await Task.create({ team: teamId, title, assignedTo });
+      res.status(201).json({
+          success: true,
+          message: 'Task created successfully',
+          task
       });
-    }
-
-    if (!title || !assignedTo) {
-      console.log('Title and Assigned To are required');
-      return res.status(400).json({
-        success: false,
-        message: "Title and Assigned To are required",
-      });
-    }
-
-    // create task
-    const task = await Task.create({
-      title,
-      description,
-      assignedTo,
-      dueDate,
-    });
-
-    // push task into team
-    await Team.findByIdAndUpdate(teamId, { $push: { tasks: task._id } });
-    console.log('Task created:');
-
-    res.status(201).json({
-      success: true,
-      message: "Task created successfully",
-      task,
-    });
-  } catch (err) {
-    console.error("Add task error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
+})
 
 
 app.get('/api/admin/teams', isAuthenticated, async (req,res) => {
@@ -433,8 +400,8 @@ app.get("/api/tasks", async (req, res) => {
 
     const tasks = await Task.find({ assignedTo: req.user._id })
       .populate("team", "title") // show team name
-      .sort({ createdAt: -1 });
 
+      console.log('Tasks assigned to the logged-in user:', tasks);
     res.json({
       success: true,
       tasks
@@ -467,6 +434,7 @@ app.get("/api/teams", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 // assign port  
 const port = process.env.PORT || 4000;

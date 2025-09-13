@@ -1,81 +1,194 @@
 import { useState } from "react";
+import { Users, Plus, Crown, CheckCircle, Calendar, User } from "lucide-react";
 import AddMemberForm from "./add-member";
-import AddTaskModal from "./create-task";
 
-const TeamCard = ({ teams, user }: any) => {
-  console.log("TeamsCard :", teams, user);
-  const [selectedMember, setSelectedMember] = useState<string | null>(null);
+
+const AddTaskModal = ({ open, onClose, teamId, assignedTo }) => (
+  open ? (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+        <h3 className="text-xl font-semibold mb-4">Create New Task</h3>
+        <div className="space-y-4">
+          <input 
+            type="text" 
+            placeholder="Task title..."
+            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <textarea 
+            placeholder="Task description..."
+            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none"
+          />
+          <div className="flex gap-3">
+            <button 
+              onClick={onClose}
+              className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={onClose}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Create Task
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : null
+);
+
+const TeamCard = ({ teams, user }) => {
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  // Mock data for demonstration
+
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-5">
-        Teams
-      </h1>
-
-      <section className="  flex flex-col gap-1">
-        {teams.length > 0 ? teams.map((team: any) => (
-          <div key={team._id} className="bg-blue-300 rounded-xl py-2">
-            <div className="flex justify-between items-center px-5 py-4">
-              <h2 className="text-lg font-semibold">{team.title}:</h2>
-              <AddMemberForm teamId={team._id} />
+    <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-3 mb-4">
+            <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
+              <Users className="w-8 h-8 text-white" />
             </div>
-            <div className="h-px bg-gray-200 mx-5 my-5 "></div>
-            {/* <h3>{team.admin.username}</h3> */}
-            <h4>{team.tasks.length > 0 &&
-              team.tasks.map((task: any) => (
-                <li key={task._id}>
-                  {task.title}
-                </li>
-              ))
-            }</h4>
-            <h5>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Teams
+            </h1>
+          </div>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Collaborate, manage, and achieve greatness together
+          </p>
+        </div>
 
-              {
-                team.members.map((member: any) => (
-                  <li key={member._id} className="flex justify-center">
-                   
-                   <div className="space-y-3 my-0.5">
-                      {
-                         
+        {(!teams || teams.length === 0) ? (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+              <Users className="w-12 h-12 text-gray-400" />
+            </div>
+            <p className="text-gray-500 text-xl mb-4">No teams yet</p>
+            <p className="text-gray-400">Create your first team to get started</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {teams.map((team) => (
+              <div
+                key={team._id}
+                className="group bg-white/70 backdrop-blur-sm border border-white/50 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              >
+                {/* Team Header */}
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                      {team.title}
+                    </h2>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Users size={16} />
+                      <span>{team.members.length} members</span>
+                    </div>
+                  </div>
+                  <AddMemberForm teamId={team._id} />
+                </div>
 
-                        member._id === team.admin._id ? (
-                          <span className="font-bold">Admin: {member.username}</span>
-                        ) :
+                {/* Tasks Section */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                      <Calendar size={16} className="text-blue-500" />
+                      Tasks
+                    </h3>
+                    <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                      {team.tasks.length}
+                    </span>
+                  </div>
+                  
+                  {team.tasks.length > 0 ? (
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {team.tasks.map((task) => (
+                        <div
+                          key={task._id}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <CheckCircle 
+                            size={16} 
+                            className={task.completed ? "text-green-500" : "text-gray-300"} 
+                          />
+                          <span className={`text-sm flex-1 ${task.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                            {task.title}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-gray-400">
+                      <Calendar size={24} className="mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No tasks yet</p>
+                    </div>
+                  )}
+                </div>
 
-                          <section className="bg-blue-400 rounded px-5 py-2">
-                            <span className="bg-red-400 px-2 py-1 rounded text-white">
+                {/* Members Section */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <User size={16} className="text-indigo-500" />
+                    Members
+                  </h3>
+                  
+                  <div className="space-y-3 max-h-48 overflow-y-auto">
+                    {team.members.map((member) => (
+                      <div key={member._id} className="flex items-center justify-between">
+                        {member._id === team.admin._id ? (
+                          <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-full flex-1">
+                            <Crown size={16} className="text-yellow-600" />
+                            <span className="font-semibold text-yellow-800 text-sm">
                               {member.username}
                             </span>
+                            <span className="text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full ml-auto">
+                              Admin
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">
+                                  {member.username.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              <span className="text-sm font-medium text-gray-700">
+                                {member.username}
+                              </span>
+                            </div>
                             <button
-                              className="ml-5 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-900 text-sm"
+                              className="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 shadow-sm hover:shadow-md"
                               onClick={() => setSelectedMember(member._id)}
                             >
                               Assign Task
                             </button>
-                          </section>
-                          
-                      }
+                          </div>
+                        )}
                       </div>
-
-                      {/* Modal opens when a member is selected */}
-                      {selectedMember && (
-                        <AddTaskModal
-                          open={!!selectedMember}
-                          onClose={() => setSelectedMember(null)}
-                          teamId={team._id}
-                          assignedTo={selectedMember}
-                        />
-                      )}
-                    
-
-                  </li>
-                ))
-              }</h5>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        )) : "No teams "}
-      </section>
-    </div>
-  )
-}
+        )}
 
-export default TeamCard
+        {/* Task Assignment Modal */}
+        {selectedMember && (
+          <AddTaskModal
+            open={!!selectedMember}
+            onClose={() => setSelectedMember(null)}
+            teamId="current-team"
+            assignedTo={selectedMember}
+          />
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default TeamCard;

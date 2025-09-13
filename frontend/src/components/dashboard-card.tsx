@@ -4,7 +4,6 @@ import AddTaskModal from "./create-task";
 import MyTasks from "./myTask";
 import TeamsCard from "./get-team";
 import { Button } from "./ui/button";
-import axios from "axios";
 
 type Props = {
   tasks: { _id: string; title: string }[];
@@ -18,20 +17,6 @@ export default function DashboardCard({ tasks, teams, user }: Props) {
     const [teamsData, setTeamsData] = useState(teams);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
-
-  const handleCreateTeam = async () => {
-    const response = await axios.post(`${import.meta.env.VITE_API_KEY}/create/team`, {
-      title: "New Team",
-    }, { withCredentials: true });
-    if (response.data.success) {
-      console.log("Team created successfully");
-      setShowTeamModal(false);
-      setTeamsData(response.data.teams);
-    } else {
-      console.error("Failed to create team", response.data);
-      setShowTeamModal(false);
-    }
-    }
 
     // const handleTask = async () => {
     //   const response = await axios.post(`${import.meta.env.VITE_API_KEY}/team/add/task`, {
@@ -51,9 +36,7 @@ export default function DashboardCard({ tasks, teams, user }: Props) {
         {/* Action buttons */}
         <div className="flex justify-center gap-4 mb-8">
           <Button onClick={() => setShowTeamModal(true)}>+ Create Team</Button>
-          {teams.length > 0 && (
-            <Button onClick={() => setShowTaskModal(true)}>+ Add Task</Button>
-          )}
+          
         </div>
 
         {/* Create Team Modal */}
