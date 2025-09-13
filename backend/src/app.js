@@ -34,9 +34,10 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true, 
-    sameSite: 'none', 
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: 'none',
     secure: process.env.NODE_ENV !== 'development',
     // domain: process.env.NODE_ENV !== 'development' ? '.vercel.app' : undefined
   }, // 1 week
@@ -78,7 +79,7 @@ app.get('/secret', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
 });
 
 app.get("/api/logout", (req, res, next) => {
-    console.log('Logout route hit');
+  console.log('Logout route hit');
   req.logout(err => {
     if (err) { return next(err); }
     res.redirect("/login");
@@ -86,217 +87,226 @@ app.get("/api/logout", (req, res, next) => {
 });
 
 app.post('/api/signup', async (req, res) => {
-    // console.log('Signup route hit');
+  // console.log('Signup route hit');
   try {
-        const { name, username, password } = req.body;
+    const { name, username, password } = req.body;
 
-        // Validate required fields
-        if (!name || !username || !password) {
+    // Validate required fields
+    if (!name || !username || !password) {
 
-            // console.log('Missing required fields');
-            return res.status(400).json({
-                success: false,
-                message: 'Name, username, and password are required'
-            });
-        }
-
-        // Check if username already exists
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            // console.log('Username already exists:', username);
-            return res.status(400).json({
-                success: false,
-                message: 'Username already exists'
-            });
-        }
-
-        // Create new user object
-        const newUser = new User({
-            name,
-            username
-        });
-
-        // Register user with passport-local-mongoose
-        const registeredUser = await User.register(newUser, password);
-
-        // Automatically log in the user after registration
-        req.login(registeredUser, (err) => {
-            // console.log('Auto login after registration');
-            if (err) {
-                console.error('Login error after registration:', err);
-                return res.status(500).json({
-                    success: false,
-                    message: 'Registration successful but login failed'
-                });
-            }
-
-            res.status(201).json({
-                success: true,
-                message: 'User registered and logged in successfully',
-                user: {
-                    id: registeredUser._id,
-                    name: registeredUser.name,
-                    username: registeredUser.username
-                }
-            });
-        });
-
-    } catch (error) {
-        // console.error('Signup error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Registration failed',
-            error: error.message
-        });
+      // console.log('Missing required fields');
+      return res.status(400).json({
+        success: false,
+        message: 'Name, username, and password are required'
+      });
     }
+
+    // Check if username already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      // console.log('Username already exists:', username);
+      return res.status(400).json({
+        success: false,
+        message: 'Username already exists'
+      });
+    }
+
+    // Create new user object
+    const newUser = new User({
+      name,
+      username
+    });
+
+    // Register user with passport-local-mongoose
+    const registeredUser = await User.register(newUser, password);
+
+    // Automatically log in the user after registration
+    req.login(registeredUser, (err) => {
+      // console.log('Auto login after registration');
+      if (err) {
+        console.error('Login error after registration:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Registration successful but login failed'
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: 'User registered and logged in successfully',
+        user: {
+          id: registeredUser._id,
+          name: registeredUser.name,
+          username: registeredUser.username
+        }
+      });
+    });
+
+  } catch (error) {
+    // console.error('Signup error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      error: error.message
+    });
+  }
 });
 
 app.post('/api/login', (req, res, next) => {
-    
-    passport.authenticate('local', (err, user, info) => {
-        if (err) {
-            console.log("pass error: ", err)
-            return next(err);
+
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      console.log("pass error: ", err)
+      return next(err);
+    }
+    if (!user) {
+      console.log("Invalid credentials")
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
+
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      console.log('Login successful');
+      console.log('Logged in user:', req.user);
+
+      return res.json({
+        success: true,
+        message: 'Login successful',
+        user: {
+          id: user._id,
+          name: user.name,
+          username: user.username
         }
-        if (!user) {
-            console.log("Invalid credentials")
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
-        }
-        
-        req.logIn(user, (err) => {
-            if (err) {
-                return next(err);
-            }
-            
-            console.log('Login successful');
-            console.log('Logged in user:', req.user);
-            
-            return res.json({
-                success: true,
-                message: 'Login successful',
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    username: user.username
-                }
-            });
-        });
-    })(req, res, next);
+      });
+    });
+  })(req, res, next);
 });
 
 app.get('/api/user/isauthenticated', (req, res) => {
-    console.log('is authenticated route hit')
-    // console.log('User is authenticated:', req?.user);
-    if (req.isAuthenticated()) {
-        console.log('User is authenticated:', req.user);
-        res.status(200).json({
-            success: true,
-            user: {
-                id: req.user._id,
-                name: req.user.name,
-                username: req.user.username
-            }
-        });
-    } else {
-        res.status(401).json({
-            success: false,
-            message: 'Not authenticated'
-        });
-    }
+  console.log('is authenticated route hit')
+  // console.log('User is authenticated:', req?.user);
+  if (req.isAuthenticated()) {
+    console.log('User is authenticated:', req.user);
+    res.status(200).json({
+      success: true,
+      user: {
+        id: req.user._id,
+        name: req.user.name,
+        username: req.user.username
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: 'Not authenticated'
+    });
+  }
 });
 
-app.post('/api/create/team', async (req,res) => {
-    console.log("create team route hit");
-    
-    const { title } = req.body;
-    console.log('Create team route hit');
-    console.log('Team Name:', title);
-    if (!title) {
-        return res.status(400).json({
-            success: false,
-            message: 'Team name is required'
-        });
-    }
-    const team = await Team.create({ title, admin: req.user._id, members: [req.user._id] });
-    console.log('Team created:', team);
-    res.status(201).json({
-        success: true,
-        message: 'Team created successfully',
-        team
+app.post('/api/create/team', async (req, res) => {
+  console.log("create team route hit");
+
+  const { title } = req.body;
+  console.log('Create team route hit');
+  console.log('Team Name:', title);
+  if (!title) {
+    return res.status(400).json({
+      success: false,
+      message: 'Team name is required'
     });
+  }
+  const team = await Team.create({ title, admin: req.user._id, members: [req.user._id] });
+  console.log('Team created:', team);
+  res.status(201).json({
+    success: true,
+    message: 'Team created successfully',
+    team
+  });
 })
 
-app.patch('/api/team/memebers/add', async (req,res) => {
-    console.log('Add team member route hit');
-    const isAdmin = await Team.findOne({ _id: req.body.teamId, admin: req.user._id });
-    if (!isAdmin) {
-        return res.status(403).json({
-            success: false,
-            message: 'Only team admin can add members'
-        });
-    }
-    const { teamId, userId } = req.body;
-    console.log('Team ID:', teamId);
-    console.log('User ID:', userId);
-    if (!teamId || !userId) {
-        return res.status(400).json({
-            success: false,
-            message: 'Team ID and User ID are required'
-        });
-    }
-    const team = await Team.findByIdAndUpdate(teamId, { $addToSet: { members: userId } }, { new: true });
-    console.log('Team updated:', team);
-    res.status(200).json({
-        success: true,
-        message: 'Member added to team successfully',
-        team
+app.patch('/api/team/memebers/add', async (req, res) => {
+  console.log('Add team member route hit');
+  const isAdmin = await Team.findOne({ _id: req.body.teamId, admin: req.user._id });
+  if (!isAdmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Only team admin can add members'
     });
+  }
+  const { teamId, userId } = req.body;
+  console.log('Team ID:', teamId);
+  console.log('User ID:', userId);
+  if (!teamId || !userId) {
+    return res.status(400).json({
+      success: false,
+      message: 'Team ID and User ID are required'
+    });
+  }
+  const team = await Team.findByIdAndUpdate(teamId, { $addToSet: { members: userId } }, { new: true });
+  console.log('Team updated:', team);
+  res.status(200).json({
+    success: true,
+    message: 'Member added to team successfully',
+    team
+  });
 })
 
 app.post('/api/task/create', async (req, res) => {
   console.log('New create task route hit');
-      const { teamId, title, assignedTo } = req.body;
-      console.log('create task body', { teamId, title, assignedTo } );
+  const { teamId, title, assignedTo } = req.body;
+  console.log('create task body', { teamId, title, assignedTo });
 
-      const task = await Task.create({ team: teamId, title, assignedTo });
-      res.status(201).json({
-          success: true,
-          message: 'Task created successfully',
-          task
-      });
-})
+  const task = await Task.create({ team: teamId, title, assignedTo });
 
-
-app.get('/api/admin/teams', isAuthenticated, async (req,res) => {
-    console.log('Admin get teams route hit');
-    console.log('Get teams route hit');
-    const teams = await Team.find({ members: req.user._id }).populate('admin', 'name username').populate('members', 'name username');
-    res.status(200).json({
-        success: true,
-        teams
+  if (!task) {
+    return res.status(400).json({
+      success: false,
+      message: 'Task not created'
     });
+  }
+  await Team.findByIdAndUpdate(teamId, { $push : { tasks: task._id } });
+  console.log('New Task created:', task);
+  res.status(201).json({
+    success: true,
+    message: 'Task created successfully',
+    task
+  });
 })
 
-app.get('/api/team/:id', async (req,res) => {
-    console.log('Get team by ID route hit');
-    const team = await Team.findOne({ _id: req.params.id, members: req.user._id })  
+
+app.get('/api/admin/teams', isAuthenticated, async (req, res) => {
+  console.log('Admin get teams route hit');
+  console.log('Get teams route hit');
+  const teams = await Team.find({ members: req.user._id }).populate('admin', 'name username').populate('members', 'name username');
+  res.status(200).json({
+    success: true,
+    teams
+  });
+})
+
+app.get('/api/team/:id', async (req, res) => {
+  console.log('Get team by ID route hit');
+  const team = await Team.findOne({ _id: req.params.id, members: req.user._id })
     .populate('admin', 'name username')
     .populate('members', 'name username');
-    if (!team) {
-        return res.status(404).json({
-            success: false,
-            message: 'Team not found or you are not a member'
-        });
-    }
-    const tasks = await Task.find({ assignedTo: { $in: team.members } }).populate('assignedTo', 'name username')
-    res.status(200).json({
-        success: true,
-        team,
-        tasks
+  if (!team) {
+    return res.status(404).json({
+      success: false,
+      message: 'Team not found or you are not a member'
     });
+  }
+  const tasks = await Task.find({ assignedTo: { $in: team.members } }).populate('assignedTo', 'name username')
+  res.status(200).json({
+    success: true,
+    team,
+    tasks
+  });
 })
 
 // Search user by username
@@ -360,7 +370,7 @@ app.post("/api/teams/:teamId/add-member", async (req, res) => {
 });
 
 app.post("/api/teams/:teamId/:username/assign-task", async (req, res) => {
-    console.log('Assign task route hit');
+  console.log('Assign task route hit');
   try {
     const { teamId, username } = req.params;
     const { title, description } = req.body;
@@ -401,7 +411,7 @@ app.get("/api/tasks", async (req, res) => {
     const tasks = await Task.find({ assignedTo: req.user._id })
       .populate("team", "title") // show team name
 
-      console.log('Tasks assigned to the logged-in user:', tasks);
+    console.log('Tasks assigned to the logged-in user:', tasks);
     res.json({
       success: true,
       tasks
@@ -423,7 +433,17 @@ app.get("/api/teams", async (req, res) => {
 
     const teams = await Team.find({ members: req.user._id })
       .populate("admin", "name username")
-      .populate("members", "name username");
+      .populate("members", "name username")
+      .populate({
+        path: "tasks",
+        select: "title assignedTo",
+        populate: {
+          path: "assignedTo",
+          select: "name username"
+        }
+
+      });
+    console.log('tasks assigned to the teams: ', teams.tasks);
 
     res.status(200).json({
       success: true,

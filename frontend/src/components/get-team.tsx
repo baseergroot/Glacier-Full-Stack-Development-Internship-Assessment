@@ -1,48 +1,11 @@
 import { useState } from "react";
 import { Users, Plus, Crown, CheckCircle, Calendar, User } from "lucide-react";
 import AddMemberForm from "./add-member";
+import AddTaskModal from "./create-task";
 
-
-const AddTaskModal = ({ open, onClose, teamId, assignedTo }) => (
-  open ? (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
-        <h3 className="text-xl font-semibold mb-4">Create New Task</h3>
-        <div className="space-y-4">
-          <input 
-            type="text" 
-            placeholder="Task title..."
-            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <textarea 
-            placeholder="Task description..."
-            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none"
-          />
-          <div className="flex gap-3">
-            <button 
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Cancel
-            </button>
-            <button 
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Create Task
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  ) : null
-);
-
-const TeamCard = ({ teams, user }) => {
+const TeamCard = ({ teams, user }: any) => {
   const [selectedMember, setSelectedMember] = useState(null);
-
-  // Mock data for demonstration
-
+  const [selectedTeam, setSelectedTeam] = useState(null);
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-8">
@@ -105,7 +68,7 @@ const TeamCard = ({ teams, user }) => {
                   
                   {team.tasks.length > 0 ? (
                     <div className="space-y-2 max-h-32 overflow-y-auto">
-                      {team.tasks.map((task) => (
+                      {team.tasks.map((task: any) => (
                         <div
                           key={task._id}
                           className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors"
@@ -162,7 +125,10 @@ const TeamCard = ({ teams, user }) => {
                             </div>
                             <button
                               className="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 shadow-sm hover:shadow-md"
-                              onClick={() => setSelectedMember(member._id)}
+                              onClick={() => {
+                                setSelectedMember(member._id)
+                                setSelectedTeam(team._id)
+                              }}
                             >
                               Assign Task
                             </button>
@@ -182,7 +148,7 @@ const TeamCard = ({ teams, user }) => {
           <AddTaskModal
             open={!!selectedMember}
             onClose={() => setSelectedMember(null)}
-            teamId="current-team"
+            teamId={selectedTeam}
             assignedTo={selectedMember}
           />
         )}

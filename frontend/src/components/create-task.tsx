@@ -27,7 +27,6 @@ export default function AddTaskModal({ open, onClose, teamId, assignedTo }: any)
     } finally {
       setLoading(false);
     }
-
   };
 
   return (

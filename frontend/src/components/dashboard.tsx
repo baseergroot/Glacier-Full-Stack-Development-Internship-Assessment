@@ -42,8 +42,8 @@ export default function Dashboard({ isAuthenticated, user }: { isAuthenticated: 
       } else {
         console.log("team error", teamRes.data);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    } catch (error: any) {
+      console.error("Error fetching data:", error?.message);
     }
   };
 
